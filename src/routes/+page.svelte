@@ -7,23 +7,49 @@
 		return arr[Math.floor(Math.random() * arr.length)];
 	}
 
-	type GameState = 'inGame' | 'startScreen';
+	type GameState = 'inGame' | 'startScreen' | 'endScreen';
 	let gameState: GameState = $state('startScreen');
 	const ads = [Ad1, Ad2];
+    let countdown = $state(5);
+    let skipEnabled = $state(false);
+    let startTimestamp = -1;
+    let reactionTime = -1;
 
 	let ad = $state(pickRandom(ads));
 	let video: HTMLVideoElement | undefined = undefined;
 
 	function start() {
 		gameState = 'inGame';
+        const interval = setInterval(() => {
+            countdown--;
+            if(countdown <= 0) {
+                startTimestamp = Date.now();
+                skipEnabled = true;
+                clearInterval(interval);
+            }
+        }, 1000)
 	}
+
+    function stop() {
+        reactionTime = Date.now() - startTimestamp;
+        gameState = 'endScreen';
+    }
 </script>
 
-<h1>YouTube</h1>
-{#if gameState === 'startScreen'}
-	<button onclick={start}>Start</button>
-{:else if gameState === 'inGame'}
-	<video bind:this={video} autoplay>
-		<source src={ad} />
-	</video>
-{/if}
+<main class="h-screen w-screen bg-neutral-900 text-white">
+	<h1 class=" text-2xl">YouTube</h1>
+	<div class="h-full flex justify-center items-center">
+		{#if gameState === 'startScreen'}
+			<button class=" border-2 border-white p-2 rounded-xl text-2xl" onclick={start}>Start</button>
+		{:else if gameState === 'inGame'}
+        <div class="relative">
+			<video bind:this={video} src={ad} autoplay />
+            <button disabled={!skipEnabled} onclick={stop} class="bg-black py-2 px-4 absolute right-0 bottom-5">Skip {countdown > 0 ? `| ${countdown}` : ''}</button>
+        </div>
+        {:else if gameState === 'endScreen'}
+        <div>
+            You watched <span class="font-bold">{reactionTime}ms</span> of unnecessary ads.
+        </div>
+		{/if}
+	</div>
+</main>
