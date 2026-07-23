@@ -12,20 +12,25 @@
 	let gameState: GameState = $state('startScreen');
 	const ads = [Ad1, Ad2, Ad3];
     let countdown = $state(5);
-    let skipEnabled = $state(false);
     let startTimestamp = -1;
-    let reactionTime = -1;
+    let earlyClicks = 0;
+    let missedClicks = 0;
+    let reactionTime = $state(-1);
+    let skipEnabled = $derived(gameState === 'inGame' && countdown <= 0);
 
 	let ad = $state(pickRandom(ads));
 	let video: HTMLVideoElement | undefined = undefined;
 
 	function start() {
+        ad = pickRandom(ads);
+        countdown = 5
+        earlyClicks = 0;
+        missedClicks = 0;
 		gameState = 'inGame';
         const interval = setInterval(() => {
             countdown--;
             if(countdown <= 0) {
                 startTimestamp = Date.now();
-                skipEnabled = true;
                 clearInterval(interval);
             }
         }, 1000)
@@ -37,19 +42,22 @@
     }
 </script>
 
-<main class="h-screen w-screen bg-neutral-900 text-white">
-	<h1 class=" text-2xl">YouTube</h1>
-	<div class="h-full flex justify-center items-center">
+<main class="h-screen w-screen p-2 bg-neutral-900 text-white">
+	<h1 class=" text-2xl">AdTube</h1>
+	<div class="h-full flex flex-col justify-center items-center">
 		{#if gameState === 'startScreen'}
 			<button class=" border-2 border-white p-2 rounded-xl text-2xl" onclick={start}>Start</button>
 		{:else if gameState === 'inGame'}
         <div class="relative">
-			<video bind:this={video} src={ad} autoplay />
-            <button disabled={!skipEnabled} onclick={stop} class="bg-black py-2 px-4 absolute right-0 bottom-5">Skip {countdown > 0 ? `| ${countdown}` : ''}</button>
+			<video onclick={()=>{missedClicks++}} bind:this={video} src={ad} autoplay />
+            <button onclick={skipEnabled ? stop : () => {earlyClicks++}} class="bg-black py-2 px-4 absolute right-0 bottom-5">Skip {countdown > 0 ? `| ${countdown}` : ''}</button>
         </div>
         {:else if gameState === 'endScreen'}
-        <div>
-            You watched <span class="font-bold">{reactionTime}ms</span> of unnecessary ads.
+        <div class="flex flex-col items-center gap-5">
+            <p>You watched <span class="font-bold">{reactionTime}ms</span> of unnecessary ads.</p>
+            {#if earlyClicks > 0}<p>You clicked too early <span class="font-bold">{`${earlyClicks} time${earlyClicks > 1 ? 's': ''}`}</span></p>{/if}
+            {#if missedClicks > 0}<p>You missed the button <span class="font-bold">{`${missedClicks} time${missedClicks > 1 ? 's': ''}`}</span></p>{/if}
+			<button class=" border-2 border-white p-2 rounded-xl text-2xl" onclick={start}>Next</button>
         </div>
 		{/if}
 	</div>
