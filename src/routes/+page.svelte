@@ -12,13 +12,13 @@
     let skipEnabled = $derived(gameState === 'inGame' && countdown <= 0);
 
 	let ad = $state(getRandomAd());
-	let video: HTMLVideoElement | undefined = undefined;
 
 	function start() {
         ad = getRandomAd();
         countdown = 5
         earlyClicks = 0;
         missedClicks = 0;
+		startTimestamp = -1;
 		gameState = 'inGame';
         const interval = setInterval(() => {
             countdown--;
@@ -42,7 +42,7 @@
 			<button class=" border-2 border-white p-2 rounded-xl text-2xl" onclick={start}>Start</button>
 		{:else if gameState === 'inGame'}
         <div class="relative">
-			<video onclick={()=>{missedClicks++}} bind:this={video} src={ad} autoplay />
+			<video onclick={()=>{missedClicks++}} src={ad} autoplay onended={start} />
             <button onclick={skipEnabled ? stop : () => {earlyClicks++}} class="bg-black py-2 px-4 absolute right-0 bottom-5">Skip {countdown > 0 ? `| ${countdown}` : ''}</button>
         </div>
         {:else if gameState === 'endScreen'}
