@@ -2,6 +2,11 @@
 	import { getRandomAd } from '$lib/ads';
 	import { resolve } from '$app/paths';
 
+    function pickRandom<T>(arr: T[]): T {
+		if (arr.length === 0) throw new Error('Cannot pick from an empty array');
+		return arr[Math.floor(Math.random() * arr.length)];
+	}
+
 	type GameState = 'inGame' | 'startScreen' | 'endScreen';
 	let gameState: GameState = $state('startScreen');
 	let countdown = $state(5);
@@ -12,7 +17,7 @@
 	let skipEnabled = $derived(gameState === 'inGame' && countdown <= 0);
 	let level = $state(0);
 	let button_x = $state('right-0');
-	let button_y = $state('bottom-7');
+    let button_anim: '' | 'oscillate' | 'jump' = $state('');
 
 	let ad = $state(getRandomAd());
 
@@ -23,9 +28,11 @@
 		startTimestamp = -1;
 
 		button_x = level < 3 ? 'right-0' : Math.random() < 0.5 ? 'right-0' : 'left-0';
+		button_anim = level < 5 ? '' : level < 8 ? pickRandom(['oscillate', '']) : pickRandom(['', 'oscillate', 'jump']);
 		countdown = level < 3 ? 5 : 2 + Math.floor(Math.random() * 5);
 
         console.log('button_x', button_x);
+        console.log('button_anim', button_anim);
         console.log('countdown', countdown);
 
 		gameState = 'inGame';
@@ -66,7 +73,7 @@
 						: () => {
 								earlyClicks++;
 							}}
-					class={`absolute bottom-5 bg-black px-4 py-2 ${button_x}`}
+					class={`absolute bottom-5 bg-black px-4 py-2 ${button_x} ${button_anim}`}
 					>Skip {countdown > 0 ? `| ${countdown}` : ''}</button
 				>
 			</div>
@@ -91,3 +98,22 @@
 		<a href={resolve('/credits')}>Credits</a>
 	</footer>
 </div>
+
+<style>
+    .oscillate {
+        animation: move 2s ease-in-out 0s infinite alternate;
+        transform: translateY(-100px);
+    }
+    .jump {
+        animation: move 1s steps(2, jump-both) 0s infinite alternate;
+        transform: translateY(-100px);
+    }
+    @keyframes move {
+        0% {
+            transform: translateY(0);
+        }
+        1000% {
+            transform: translateY(-1000px);
+        }
+    }
+</style>
