@@ -16,14 +16,12 @@ export function getRandomAd(): string {
     if (ads.length === 0) throw new Error('Cannot pick from an empty array');
     let index = Math.floor(Math.random() * ads.length);
     while (recentlyPlayed.includes(index)) {
-        console.log(index);
         index = Math.floor(Math.random() * ads.length);
     }
     recentlyPlayed.push(index);
     if (recentlyPlayed.length > .5 * ads.length) {
         recentlyPlayed.shift();
     }
-    console.log(recentlyPlayed);
     return ads[index].src;
 }
 
