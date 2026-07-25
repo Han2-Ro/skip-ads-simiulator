@@ -18,7 +18,7 @@
 	let shitPoints = $state(0);
 	let shitPointsLimit = $state(1000);
 	let shitPercent = $derived((shitPoints * 100) / shitPointsLimit);
-	let score = $state(0);
+	let score = $state(-1000);
 
 	// score caluculation
 	let shitPointsDelta = $derived(Math.log(0.005 * reactionTime + 1) * 300);
@@ -82,7 +82,7 @@
 
 <div class="absolute inset-x-[25%] top-4 h-10 rounded-full border border-white/20 p-1">
 	<div class="h-full max-w-full min-w-7 rounded-full bg-white/50" style="width: {shitPercent}%">
-		{`${shitPoints.toFixed(0)}/${shitPointsLimit}`}
+		<!-- {`${shitPoints.toFixed(0)}/${shitPointsLimit}`} -->
 	</div>
 </div>
 <div
@@ -92,10 +92,26 @@
 </div>
 <div class="flex h-full flex-col items-center justify-center">
 	{#if gameState === 'startScreen'}
-		{#if score > 0}
-			<p>Last Score: {score.toFixed()}</p>
-		{/if}
-		<button class=" rounded-xl border-2 border-white p-2 text-2xl" onclick={start}>Start</button>
+		<div
+			class="flex max-w-lg flex-col items-center gap-2 rounded-lg border border-white/20 bg-[#212121] px-10 py-5 text-center text-sm text-neutral-300"
+		>
+			<h2 class="text-lg font-bold text-white">
+				{#if score === -1000}
+					Skip the ads!
+				{:else}
+					Too slow! The ad-meter is full.
+				{/if}
+			</h2>
+			<p>Can you hit the perfect skip? Keep the ad-meter low and the score high.</p>
+			<p>Tipp: if you're fast enough the ad-meter can go down again.</p>
+			{#if score > 0}
+				<p>Last Score: {score.toFixed()}</p>
+			{/if}
+			<button
+				class="mt-2 w-full rounded-full bg-linear-to-t from-white/10 to-white/20 p-1 font-bold text-white"
+				onclick={start}>Start</button
+			>
+		</div>
 	{:else if gameState === 'adPlaying'}
 		<div class="relative">
 			<video
@@ -117,7 +133,12 @@
 			>
 		</div>
 	{:else if gameState === 'scoreScreen'}
-		<div class="flex flex-col items-center gap-5">
+		<div
+			class="flex max-w-lg flex-col items-center gap-2 rounded-lg border border-white/20 bg-[#212121] px-10 py-5 text-center text-sm text-neutral-300"
+		>
+			<h2 class="font-bold text-lg text-white">
+				Skipped!
+			</h2>
 			<p>
 				You watched <span class="font-bold">{reactionTime}ms</span> of unnecessary ads.
 				<span class=" pl-2 font-bold text-green-700">+{reactionScore.toFixed(0)}</span>
@@ -132,8 +153,11 @@
 						>{`${missedClicks} time${missedClicks > 1 ? 's' : ''}`}</span
 					>. <span class="pl-2 font-bold text-red-700">-{missPenalty}</span>
 				</p>{/if}
-			<p>+{shitPointsDelta}</p>
-			<button class=" rounded-xl border-2 border-white p-2 text-2xl" onclick={next}>Next</button>
+			<!-- <p>+{shitPointsDelta}</p> -->
+			<button
+				class="mt-2 w-full rounded-full bg-linear-to-t from-white/10 to-white/20 p-1 font-bold text-white"
+				onclick={next}>Next</button
+			>
 		</div>
 	{/if}
 </div>
