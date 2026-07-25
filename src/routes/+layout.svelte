@@ -9,7 +9,7 @@
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
 
-<div class="flex h-screen w-screen flex-col bg-neutral-900 p-2 text-white">
+<div class="flex h-screen w-screen flex-col bg-neutral-900 p-4 text-white">
 	<a href={resolve("/")} class="flex gap-4">
 		<Logo />
 		<h1 class=" text-2xl">AdTube</h1>
