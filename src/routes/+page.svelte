@@ -18,7 +18,7 @@
 	let shitPoints = $state(0);
 	let shitPointsLimit = $state(1000);
 	let shitPercent = $derived((shitPoints * 100) / shitPointsLimit);
-	let score = $state(-1000);
+	let score = $state(0);
 
 	// score caluculation
 	let shitPointsDelta = $derived(Math.log(0.005 * reactionTime + 1) * 300);
@@ -28,6 +28,52 @@
 	let totalScoreDelta = $derived(reactionScore - earlyPenalty - missPenalty);
 
 	let ad = $state(getRandomAd());
+
+	type CountUpParams = {
+		value: number;
+		from?: number;
+		format?: (n: number) => string;
+		duration?: number;
+		prefix?: string;
+		suffix?: string;
+		delay?: number;
+	};
+
+	// Svelte action: animates the element's text content from `from` to `value`.
+	export function countUp(node: HTMLElement, params: CountUpParams) {
+		const { format = (n) => n.toFixed(0), duration = 1500, delay = 0, prefix = '', suffix = '' } = params;
+		let raf = 0;
+		let current = params.from ?? 0;
+		const target = params.value;
+
+		function animate(from: number, to: number) {
+			const startTime = performance.now();
+			cancelAnimationFrame(raf);
+			function tick(now: number) {
+				if (now - startTime < delay) {
+					raf = requestAnimationFrame(tick);
+					return;
+				}
+				const t = Math.min((now - startTime - delay) / duration, 1);
+				const eased = 1 - Math.pow(1 - t, 3); // easeOutCubic
+				current = from + (to - from) * eased;
+				node.textContent = prefix + format(current) + suffix;
+				if (t < 1) raf = requestAnimationFrame(tick);
+				else current = to;
+			}
+			raf = requestAnimationFrame(tick);
+		}
+
+		animate(current, target);
+		return {
+			update(next: CountUpParams) {
+				animate(current, next.value);
+			},
+			destroy() {
+				cancelAnimationFrame(raf);
+			}
+		};
+	}
 
 	function next() {
 		ad = getRandomAd();
@@ -88,7 +134,7 @@
 <div
 	class="absolute top-4 right-4 flex h-10 min-w-13 items-center justify-center gap-2 rounded-full border border-white/20 p-2 text-xl font-bold text-[#3ea6ff]"
 >
-	<Account /><span class="px-1">{score.toFixed(0)}</span>
+	<Account /><span class="px-1" use:countUp={{ value: score, from: score, delay: 1500 }}>{score.toFixed(0)}</span>
 </div>
 <div class="flex h-full flex-col items-center justify-center">
 	{#if gameState === 'startScreen'}
@@ -96,7 +142,7 @@
 			class="flex max-w-lg flex-col items-center gap-2 rounded-lg border border-white/20 bg-[#212121] px-10 py-5 text-center text-sm text-neutral-300"
 		>
 			<h2 class="text-lg font-bold text-white">
-				{#if score === -1000}
+				{#if score === 0}
 					Skip the ads!
 				{:else}
 					Too slow! The ad-meter is full.
@@ -141,17 +187,28 @@
 			</h2>
 			<p>
 				You watched <span class="font-bold">{reactionTime}ms</span> of unnecessary ads.
-				<span class=" pl-2 font-bold text-green-700">+{reactionScore.toFixed(0)}</span>
+				<span
+					class="pl-2 font-bold text-green-700"
+					use:countUp={{ value: reactionScore, prefix: '+' }}>+{reactionScore.toFixed(0)}</span
+				>
 			</p>
 			{#if earlyClicks > 0}<p>
 					You clicked too early <span class="font-bold"
 						>{`${earlyClicks} time${earlyClicks > 1 ? 's' : ''}`}</span
-					>. <span class="pl-2 font-bold text-red-700">-{earlyPenalty}</span>
+					>.
+					<span
+						class="pl-2 font-bold text-red-700"
+						use:countUp={{ value: earlyPenalty, prefix: '-' }}>-{earlyPenalty}</span
+					>
 				</p>{/if}
 			{#if missedClicks > 0}<p>
 					You missed the button <span class="font-bold"
 						>{`${missedClicks} time${missedClicks > 1 ? 's' : ''}`}</span
-					>. <span class="pl-2 font-bold text-red-700">-{missPenalty}</span>
+					>.
+					<span
+						class="pl-2 font-bold text-red-700"
+						use:countUp={{ value: missPenalty, prefix: '-' }}>-{missPenalty}</span
+					>
 				</p>{/if}
 			<!-- <p>+{shitPointsDelta}</p> -->
 			<button
