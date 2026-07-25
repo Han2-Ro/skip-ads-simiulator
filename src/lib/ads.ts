@@ -10,20 +10,6 @@ import A6 from "./assets/ads/5_nanometer_transistor_--_how_they_did_it.webm"
 import A10 from "./assets/ads/First_Count_Chocula_and_Franken_Berry_commercial_(1971).webm"
 
 type Ad = { src: string, author?: string, date?: number, link?: string, attributionHtml?: string }
-const recentlyPlayed: number[] = []
-
-export function getRandomAd(): string {
-    if (ads.length === 0) throw new Error('Cannot pick from an empty array');
-    let index = Math.floor(Math.random() * ads.length);
-    while (recentlyPlayed.includes(index)) {
-        index = Math.floor(Math.random() * ads.length);
-    }
-    recentlyPlayed.push(index);
-    if (recentlyPlayed.length > .5 * ads.length) {
-        recentlyPlayed.shift();
-    }
-    return ads[index].src;
-}
 
 export const ads: Ad[] = [
     { src: A1, author: 'Jim Henson', date: 1964, link: 'https://commons.wikimedia.org/wiki/File:%22Cannon%22_Wilkins_Coffee_commercial_(1957).webm' },

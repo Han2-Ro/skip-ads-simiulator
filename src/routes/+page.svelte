@@ -1,11 +1,6 @@
 <script lang="ts">
-	import { getRandomAd } from '$lib/ads';
+	import { pickRandom, getRandomAd } from '$lib/random';
 	import { resolve } from '$app/paths';
-
-    function pickRandom<T>(arr: T[]): T {
-		if (arr.length === 0) throw new Error('Cannot pick from an empty array');
-		return arr[Math.floor(Math.random() * arr.length)];
-	}
 
 	type GameState = 'inGame' | 'startScreen' | 'endScreen';
 	let gameState: GameState = $state('startScreen');
