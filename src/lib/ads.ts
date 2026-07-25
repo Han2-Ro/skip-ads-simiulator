@@ -10,7 +10,20 @@ import A09 from './assets/ads/Folgers_commercial.webm';
 import A04 from './assets/ads/Great_Shakes_commercial_(c._1966).webm';
 import A11 from './assets/ads/JC_Penneys_Toy_Commercial.webm';
 import A03 from './assets/ads/Jim_Henson_-_McGarrys_Sausages_featuring_Kermit_and_Mack_(1964).webm';
+import A17 from './assets/ads/Kelloggs_Corn_Flakes_kids_commercial_(1950s).webm';
+import A15 from './assets/ads/Kent1956_mpg.webm';
+import A24 from './assets/ads/Liquid_Peptans_commercial_(1950s).webm';
+import A23 from './assets/ads/LuckyStr1948_2.webm';
+import A22 from './assets/ads/LuckyStr1948.webm';
+import A21 from './assets/ads/Motorola_television_advertisement,_1951.webm';
+import A20 from './assets/ads/Ohio_Lottery_Commercial.webm';
 import A02 from './assets/ads/Outdoor_Stone_Options_For_Residential_&_Commercial_Properties_by_Josh_Bois_(Clip_in_WebM_Format).webm';
+import A19 from './assets/ads/Pepsodent_commercial,_c._1950s.webm';
+import A18 from './assets/ads/Quaker_Corn_Bran_scarecrow_commercial_1_(1981).webm';
+import A16 from './assets/ads/Quaker_Corn_Bran_scarecrow_commercial_2_(1981).webm';
+import A14 from './assets/ads/Softsoap_commercial_(1980).webm';
+import A13 from './assets/ads/Softsoap_commercial_2_(1980).webm';
+import A12 from './assets/ads/Tandy_2000_commercial_with_Bill_Bixby_(1984).webm';
 
 type Ad = { src: string; author?: string; date?: number; link?: string; attributionHtml?: string };
 
@@ -25,5 +38,18 @@ export const ads: Ad[] = [
 	{ src: A04, author: "Unknown author", date: 1966, link: "https://commons.wikimedia.org/wiki/File:Great_Shakes_commercial_(c._1966).webm", attributionHtml: "<a href=\"https://commons.wikimedia.org/wiki/File:Great_Shakes_commercial_(c._1966).webm\">Unknown author</a>, Public domain, via Wikimedia Commons" },
 	{ src: A11, author: "Unknown author", date: 2003, link: "https://commons.wikimedia.org/wiki/File:JC_Penneys_Toy_Commercial.webm", attributionHtml: "<a href=\"https://commons.wikimedia.org/wiki/File:JC_Penneys_Toy_Commercial.webm\">Unknown author</a>, Public domain, via Wikimedia Commons" },
 	{ src: A03, author: "Jim Henson", date: 1964, link: "https://commons.wikimedia.org/wiki/File:Jim_Henson_-_McGarry%27s_Sausages_featuring_Kermit_and_Mack_(1964).webm", attributionHtml: "<a href=\"https://commons.wikimedia.org/wiki/File:Jim_Henson_-_McGarry%27s_Sausages_featuring_Kermit_and_Mack_(1964).webm\">Jim Henson</a>, Public domain, via Wikimedia Commons" },
-	{ src: A02, author: "Joshbois", date: 2014, link: "https://commons.wikimedia.org/wiki/File:Outdoor_Stone_Options_For_Residential_%26_Commercial_Properties_by_Josh_Bois_(Clip_in_WebM_Format).webm", attributionHtml: "<a href=\"https://commons.wikimedia.org/wiki/File:Outdoor_Stone_Options_For_Residential_%26_Commercial_Properties_by_Josh_Bois_(Clip_in_WebM_Format).webm\">Joshbois</a>, <a href=\"https://creativecommons.org/licenses/by-sa/4.0\">CC BY-SA 4.0</a>, via Wikimedia Commons" }
+	{ src: A17, author: "Kellogg's", date: 1950, link: "https://commons.wikimedia.org/wiki/File:Kellogg%27s_Corn_Flakes_kid%27s_commercial_(1950s).webm", attributionHtml: "<a href=\"https://commons.wikimedia.org/wiki/File:Kellogg%27s_Corn_Flakes_kid%27s_commercial_(1950s).webm\">Kellogg's</a>, Public domain, via Wikimedia Commons" },
+	{ src: A15, author: "Kent cigarettes", date: 2013, link: "https://commons.wikimedia.org/wiki/File:Kent1956_mpg.webm", attributionHtml: "<a href=\"https://commons.wikimedia.org/wiki/File:Kent1956_mpg.webm\">Kent cigarettes</a>, Public domain, via Wikimedia Commons" },
+	{ src: A24, author: "Unknown author", date: 1950, link: "https://commons.wikimedia.org/wiki/File:Liquid_Peptans_commercial_(1950s).webm", attributionHtml: "<a href=\"https://commons.wikimedia.org/wiki/File:Liquid_Peptans_commercial_(1950s).webm\">Unknown author</a>, Public domain, via Wikimedia Commons" },
+	{ src: A23, author: "Handy (Jam) Organization", date: 1948, link: "https://commons.wikimedia.org/wiki/File:LuckyStr1948_2.webm", attributionHtml: "<a href=\"https://commons.wikimedia.org/wiki/File:LuckyStr1948_2.webm\">Handy (Jam) Organization</a>, <a href=\"https://web.archive.org/web/20230926203737/https://creativecommons.org/licenses/publicdomain/\">Public Domain</a>, via Wikimedia Commons" },
+	{ src: A22, author: "Handy (Jam) Organization", date: 1948, link: "https://commons.wikimedia.org/wiki/File:LuckyStr1948.webm", attributionHtml: "<a href=\"https://commons.wikimedia.org/wiki/File:LuckyStr1948.webm\">Handy (Jam) Organization</a>, Public domain, via Wikimedia Commons" },
+	{ src: A21, author: "Motorola", date: 1951, link: "https://commons.wikimedia.org/wiki/File:Motorola_television_advertisement,_1951.ogv", attributionHtml: "<a href=\"https://commons.wikimedia.org/wiki/File:Motorola_television_advertisement,_1951.ogv\">Motorola</a>, Public domain, via Wikimedia Commons" },
+	{ src: A20, author: "IHelpWiki", date: 2011, link: "https://commons.wikimedia.org/wiki/File:Ohio_Lottery_Commercial.ogv", attributionHtml: "<a href=\"https://commons.wikimedia.org/wiki/File:Ohio_Lottery_Commercial.ogv\">IHelpWiki</a>, <a href=\"https://creativecommons.org/licenses/by-sa/3.0\">CC BY-SA 3.0</a>, via Wikimedia Commons" },
+	{ src: A02, author: "Joshbois", date: 2014, link: "https://commons.wikimedia.org/wiki/File:Outdoor_Stone_Options_For_Residential_%26_Commercial_Properties_by_Josh_Bois_(Clip_in_WebM_Format).webm", attributionHtml: "<a href=\"https://commons.wikimedia.org/wiki/File:Outdoor_Stone_Options_For_Residential_%26_Commercial_Properties_by_Josh_Bois_(Clip_in_WebM_Format).webm\">Joshbois</a>, <a href=\"https://creativecommons.org/licenses/by-sa/4.0\">CC BY-SA 4.0</a>, via Wikimedia Commons" },
+	{ src: A19, author: "Unknown author", link: "https://commons.wikimedia.org/wiki/File:Pepsodent_commercial,_c._1950s.ogg", attributionHtml: "<a href=\"https://commons.wikimedia.org/wiki/File:Pepsodent_commercial,_c._1950s.ogg\">Unknown author</a>, Public domain, via Wikimedia Commons" },
+	{ src: A18, author: "Quaker", date: 1981, link: "https://commons.wikimedia.org/wiki/File:Quaker_Corn_Bran_scarecrow_commercial_1_(1981).webm", attributionHtml: "<a href=\"https://commons.wikimedia.org/wiki/File:Quaker_Corn_Bran_scarecrow_commercial_1_(1981).webm\">Quaker</a>, Public domain, via Wikimedia Commons" },
+	{ src: A16, author: "Quaker", date: 1981, link: "https://commons.wikimedia.org/wiki/File:Quaker_Corn_Bran_scarecrow_commercial_2_(1981).webm", attributionHtml: "<a href=\"https://commons.wikimedia.org/wiki/File:Quaker_Corn_Bran_scarecrow_commercial_2_(1981).webm\">Quaker</a>, Public domain, via Wikimedia Commons" },
+	{ src: A14, author: "Colgate-Palmolive", date: 1980, link: "https://commons.wikimedia.org/wiki/File:Softsoap_commercial_(1980).webm", attributionHtml: "<a href=\"https://commons.wikimedia.org/wiki/File:Softsoap_commercial_(1980).webm\">Colgate-Palmolive</a>, Public domain, via Wikimedia Commons" },
+	{ src: A13, author: "Colgate-Palmolive", date: 1979, link: "https://commons.wikimedia.org/wiki/File:Softsoap_commercial_2_(1980).webm", attributionHtml: "<a href=\"https://commons.wikimedia.org/wiki/File:Softsoap_commercial_2_(1980).webm\">Colgate-Palmolive</a>, Public domain, via Wikimedia Commons" },
+	{ src: A12, author: "Tandy Corporation", date: 1984, link: "https://commons.wikimedia.org/wiki/File:Tandy_2000_commercial_with_Bill_Bixby_(1984).webm", attributionHtml: "<a href=\"https://commons.wikimedia.org/wiki/File:Tandy_2000_commercial_with_Bill_Bixby_(1984).webm\">Tandy Corporation</a>, Public domain, via Wikimedia Commons" }
 ];
