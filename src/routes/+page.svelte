@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { pickRandom, getRandomAd } from '$lib/random';
-	import { resolve } from '$app/paths';
 
 	type GameState = 'inGame' | 'startScreen' | 'endScreen';
 	let gameState: GameState = $state('startScreen');
@@ -47,9 +46,7 @@
 	}
 </script>
 
-<div class="flex h-screen w-screen flex-col bg-neutral-900 p-2 text-white">
-	<h1 class=" text-2xl">AdTube</h1>
-	<main class="flex flex-1 flex-col items-center justify-center">
+	<div class="h-full flex flex-col items-center justify-center">
 		{#if gameState === 'startScreen'}
 			<button class=" rounded-xl border-2 border-white p-2 text-2xl" onclick={start}>Start</button>
 		{:else if gameState === 'inGame'}
@@ -88,11 +85,7 @@
 				<button class=" rounded-xl border-2 border-white p-2 text-2xl" onclick={start}>Next</button>
 			</div>
 		{/if}
-	</main>
-	<footer>
-		<a href={resolve('/credits')}>Credits</a>
-	</footer>
-</div>
+	</div>
 
 <style>
     .oscillate {
