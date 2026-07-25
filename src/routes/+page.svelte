@@ -61,6 +61,7 @@
 	}
 
 	function start() {
+		level = 0;
 		shitPoints = 0;
 		shitPointsLimit = 1000;
 		score = 0;
