@@ -126,8 +126,9 @@
 	}
 </script>
 
+<!-- Ad-Meter -->
 <div class="absolute inset-x-[25%] top-4 h-10 rounded-full border border-white/20 p-1">
-	<div class="h-full max-w-full min-w-7 rounded-full bg-white/50" style="width: {shitPercent}%">
+	<div class="h-full max-w-full min-w-7 rounded-full bg-white/50 transition-[width] duration-700 ease-out" style="width: {shitPercent}%">
 		<!-- {`${shitPoints.toFixed(0)}/${shitPointsLimit}`} -->
 	</div>
 </div>
