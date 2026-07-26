@@ -2,6 +2,8 @@
 	import Account from '$lib/assets/AccountIcon.svelte';
 	import Skip from '$lib/assets/SkipIcon.svelte';
 	import { pickRandom, getRandomAd } from '$lib/random';
+	import { getUsername } from '$lib/user.svelte';
+	import { submitScore } from '$lib/pocketbase';
 
 	type GameState = 'adPlaying' | 'startScreen' | 'scoreScreen' | 'endScreen';
 	let gameState: GameState = $state('startScreen');
@@ -19,6 +21,10 @@
 	let button_offset_x = $state(0);
 	let button_offset_y = $state(0);
 	let button_anim: '' | 'oscillate' | 'jump' = $state('');
+
+	// leaderboard submission status for the end-of-game screen
+	let submitting = $state(false);
+	let submitted = $state<null | boolean>(null); // null = not attempted, true/false = outcome
 
 	// score
 	let shitPoints = $state(750);
@@ -137,6 +143,8 @@
 		shitPoints = 1000;
 		shitPointsLimit = 2000;
 		score = 0;
+		submitting = false;
+		submitted = null;
 		next();
 	}
 
@@ -150,7 +158,22 @@
 		level++;
 		if (shitPoints >= shitPointsLimit) {
 			gameState = 'startScreen';
+			// The run is over — submit the final score to the leaderboard.
+			// Guests (no username) are skipped silently by submitScore.
+			void submitFinal();
 		}
+	}
+
+	async function submitFinal() {
+		if (getUsername() === null) {
+			submitted = null; // guest — nothing to submit, no status shown
+			return;
+		}
+		submitting = true;
+		submitted = null;
+		const rec = await submitScore(score);
+		submitted = rec !== null;
+		submitting = false;
 	}
 </script>
 
@@ -186,6 +209,13 @@
 			<p>Tip: if you're fast enough the ad-meter can go down again.</p>
 			{#if score > 0}
 				<p>Last Score: {score.toFixed()}</p>
+			{/if}
+			{#if submitting}
+				<p class="text-white/50">Submitting score…</p>
+			{:else if submitted === true}
+				<p class="text-green-500">Score submitted to leaderboard ✓</p>
+			{:else if submitted === false}
+				<p class="text-red-500">Could not submit score.</p>
 			{/if}
 			<button
 				class="mt-2 w-full rounded-full bg-linear-to-t from-white/10 to-white/20 p-1 font-bold text-white"
