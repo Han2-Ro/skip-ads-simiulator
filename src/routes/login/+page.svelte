@@ -2,11 +2,10 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
-	import Logo from '$lib/assets/logo.svelte';
+	import Logo from '$lib/assets/Logo.svelte';
 	import {
 		MAX_USERNAME_LENGTH,
 		continueAsGuest,
-		getUsername,
 		login,
 		sanitizeUsername
 	} from '$lib/user';
@@ -16,15 +15,6 @@
 
 	const trimmed = $derived(username.trim());
 	const invalid = $derived(touched && sanitizeUsername(username) === null);
-
-	// If the user is already logged in, there's nothing to do here.
-	$effect(() => {
-		// read page.url.pathname to make the effect track navigation
-		void page.url.pathname;
-		if (getUsername()) {
-			goto(resolve('/'), { replaceState: true });
-		}
-	});
 
 	function submit(e: Event) {
 		e.preventDefault();

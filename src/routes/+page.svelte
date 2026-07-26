@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Account from '$lib/assets/account.svelte';
-	import Skip from '$lib/assets/skip.svelte';
+	import Account from '$lib/assets/AccountIcon.svelte';
+	import Skip from '$lib/assets/SkipIcon.svelte';
 	import { pickRandom, getRandomAd } from '$lib/random';
 
 	type GameState = 'adPlaying' | 'startScreen' | 'scoreScreen' | 'endScreen';
@@ -183,7 +183,7 @@
 				{/if}
 			</h2>
 			<p>Can you hit the perfect skip? Keep the ad-meter low and the score high.</p>
-			<p>Tipp: if you're fast enough the ad-meter can go down again.</p>
+			<p>Tip: if you're fast enough the ad-meter can go down again.</p>
 			{#if score > 0}
 				<p>Last Score: {score.toFixed()}</p>
 			{/if}
