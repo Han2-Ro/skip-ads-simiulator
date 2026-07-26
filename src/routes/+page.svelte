@@ -13,7 +13,7 @@
 	let skipEnabled = $derived(gameState === 'adPlaying' && countdown <= 0);
 	let level = $state(0);
 	let button_lr: 'left' | 'right' = $state('right');
-	let button_tb: 'top' | 'bottom' = $state('right');
+	let button_tb: 'top' | 'bottom' = $state('bottom');
 	let button_anim_target_x = $state(0);
 	let button_anim_target_y = $state(0);
 	let button_offset_x = $state(0);
@@ -21,8 +21,8 @@
 	let button_anim: '' | 'oscillate' | 'jump' = $state('');
 
 	// score
-	let shitPoints = $state(0);
-	let shitPointsLimit = $state(1000);
+	let shitPoints = $state(750);
+	let shitPointsLimit = $state(1500);
 	let shitPercent = $derived((shitPoints * 100) / shitPointsLimit);
 	let score = $state(0);
 
@@ -94,7 +94,10 @@
 		earlyClicks = 0;
 		missedClicks = 0;
 		startTimestamp = -1;
-		shitPointsLimit += 250;
+		const shitPointsMinus = (Math.atan(-0.15 * level + 4) + Math.PI/2) * 110;
+		console.log('ad-meter minus:', shitPointsMinus)
+		shitPoints -= shitPointsMinus;
+		if (shitPoints < 0) shitPoints = 0;
 
 		countdown = level < 3 ? 5 : 2 + Math.floor(Math.random() * 5);
 
@@ -107,7 +110,6 @@
 		if (button_lr === 'right') button_anim_target_x *= -1;
 
 		button_anim = level < 8 ? 'oscillate' : pickRandom(['oscillate', 'jump']);
-
 
 		console.log('lr', button_lr);
 		console.log('tb', button_tb);
@@ -127,14 +129,13 @@
 			}
 			button_offset_x = countdown % 2 != 0 ? 0 : button_anim_target_x;
 			button_offset_y = countdown % 2 != 0 ? 0 : button_anim_target_y;
-			console.log('offset', button_offset_x, button_offset_y);
 		}, 1000);
 	}
 
 	function start() {
 		level = 0;
-		shitPoints = 0;
-		shitPointsLimit = 1000;
+		shitPoints = 1000;
+		shitPointsLimit = 2000;
 		score = 0;
 		next();
 	}
@@ -144,6 +145,7 @@
 		reactionTime = Date.now() - startTimestamp;
 		gameState = 'scoreScreen';
 		score += totalScoreDelta;
+		console.log('ad-meter add:', shitPointsDelta)
 		shitPoints += shitPointsDelta;
 		level++;
 		if (shitPoints >= shitPointsLimit) {
