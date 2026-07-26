@@ -1,16 +1,17 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
 	import Logo from '$lib/assets/Logo.svelte';
 	import {
 		MAX_USERNAME_LENGTH,
 		continueAsGuest,
+		getUsername,
 		login,
 		sanitizeUsername
-	} from '$lib/user';
+	} from '$lib/user.svelte';
 
-	let username = $state('');
+	// Prefill with the current username so an already-logged-in user can edit it.
+	let username = $state(getUsername() ?? '');
 	let touched = $state(false);
 
 	const trimmed = $derived(username.trim());
@@ -45,7 +46,9 @@
 		</a>
 
 		<div class="flex flex-col gap-1">
-			<h1 class="text-2xl font-bold text-white">Sign in</h1>
+			<h1 class="text-2xl font-bold text-white">
+				{getUsername() ? 'Edit username' : 'Sign in'}
+			</h1>
 			<p class="text-base text-white/60">to continue to AdTube</p>
 		</div>
 
@@ -92,10 +95,12 @@
 		<button
 			type="button"
 			onclick={skip}
-			class="text-sm font-medium text-[#3ea6ff] hover:underline"
+			class="mt-4 text-sm font-medium text-[#3ea6ff] hover:underline"
 		>
 			Continue without an account
 		</button>
-		<p class="text-xs text-white/40">Your score won't be submitted to the leaderboard.</p>
+		<p class="text-xs text-white/40">
+			Your score won't be submitted to the leaderboard. This also removes any saved username.
+		</p>
 	</div>
 </div>

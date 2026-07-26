@@ -6,7 +6,7 @@
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
 	import Logo from '$lib/assets/Logo.svelte';
-	import { getUsername, hasIdentity } from '$lib/user';
+	import { getUsername, hasIdentity, isGuest } from '$lib/user.svelte';
 	import HamburgerIcon from '$lib/assets/HamburgerIcon.svelte';
 	import HomeIcon from '$lib/assets/HomeIcon.svelte';
 	import GlobeIcon from '$lib/assets/GlobeIcon.svelte';
@@ -63,7 +63,7 @@
 				class={`flex flex-col items-center gap-2 rounded-xl p-4 w-full hover:bg-white/10 ${menuExtended ? 'flex-row gap-6' : 'flex-col'}`}
 			>
 				<div class="w-[24px]"><AccountIcon /></div>
-				<p class={`${menuExtended ? 'text-base' : 'text-xs'}`}>{getUsername() ?? "Sgin In"}</p></a
+				<p class={`${menuExtended ? 'text-base' : 'text-xs'}`}>{getUsername() ?? (isGuest() ? 'Guest' : 'Sign In')}</p></a
 			>
 			<a
 				href={resolve('/credits')}

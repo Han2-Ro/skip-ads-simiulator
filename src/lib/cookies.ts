@@ -22,3 +22,10 @@ export function setCookie(name: string, value: string, days: number): void {
 export function hasCookie(name: string): boolean {
 	return getCookie(name) !== null;
 }
+
+export function deleteCookie(name: string): void {
+	if (typeof document === 'undefined') return;
+	document.cookie =
+		encodeURIComponent(name) +
+		'=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax';
+}
