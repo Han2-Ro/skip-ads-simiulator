@@ -41,7 +41,7 @@
 	let score = $state(0);
 
 	// score caluculation
-	let shitPointsDelta = $derived(Math.log(0.005 * reactionTime + 1) * 300);
+	let shitPointsDelta = $derived(Math.log(0.005 * reactionTime + 1) * 300 + missedClicks * 200 + earlyClicks * 500);
 	let reactionScore = $derived(10000 / reactionTime);
 	let earlyPenalty = $derived(earlyClicks * 20);
 	let missPenalty = $derived(missedClicks * 5);
@@ -224,7 +224,7 @@
 				{/if}
 			</h2>
 			<p>Can you hit the perfect skip? Keep the Insanity-Meter low and the score high.</p>
-			<p>Tip: if you're fast enough the Insanity-Meter can go down again.</p>
+			<p>Tip: if you're fast enough you can bring the Insanity-Meter down again.</p>
 			{#if score > 0}
 				<p>Last Score: {score.toFixed()}</p>
 			{/if}
