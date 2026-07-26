@@ -41,6 +41,9 @@
 
 	let ad = $state(getRandomAd());
 	let interval: NodeJS.Timeout;
+	let videoCurrentTime  = $state(0);
+	let videoDuration = $state(0);
+	let adProgress = $derived(videoDuration > 0 ? (videoCurrentTime / videoDuration) * 100 : 0);
 
 	type CountUpParams = {
 		value: number;
@@ -237,7 +240,17 @@ function next() {
 				src={ad}
 				autoplay
 				onended={next}
+				onloadedmetadata={(e) => (videoDuration = e.currentTarget.duration)}
+				ontimeupdate={(e) => (videoCurrentTime = e.currentTarget.currentTime)}
 			/>
+
+			<!-- ad progress bar -->
+			<div class="absolute inset-x-0 bottom-0 h-1.5 bg-neutral-600">
+				<div
+					class="h-full bg-yellow-400"
+					style="width: {adProgress}%"
+				></div>
+			</div>
 
 			<!-- skip button -->
 			<button
