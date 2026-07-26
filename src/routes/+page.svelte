@@ -5,6 +5,14 @@
 	import { getUsername } from '$lib/user.svelte';
 	import { submitScore } from '$lib/pocketbase';
 
+	// Opens the mock advertiser landing page in a new tab. `from` records why
+	// the player got sent there ('early' misclick on the skip button, 'missed'
+	// click on the video itself) so the ad page can explain itself.
+	function openAdPage(from: 'early' | 'missed') {
+		window.open(`/ad?from=${from}`, '_blank', 'noopener');
+	}
+	import Logo from '$lib/assets/Logo.svelte';
+
 	type GameState = 'adPlaying' | 'startScreen' | 'scoreScreen' | 'endScreen';
 	let gameState: GameState = $state('startScreen');
 	let countdown = $state(5);
@@ -27,8 +35,8 @@
 	let submitted = $state<null | boolean>(null); // null = not attempted, true/false = outcome
 
 	// score
-	let shitPoints = $state(750);
-	let shitPointsLimit = $state(1500);
+	let shitPoints = $state(600);
+	let shitPointsLimit = $state(1100);
 	let shitPercent = $derived((shitPoints * 100) / shitPointsLimit);
 	let score = $state(0);
 
@@ -41,7 +49,7 @@
 
 	let ad = $state(getRandomAd());
 	let interval: NodeJS.Timeout;
-	let videoCurrentTime  = $state(0);
+	let videoCurrentTime = $state(0);
 	let videoDuration = $state(0);
 	let adProgress = $derived(videoDuration > 0 ? (videoCurrentTime / videoDuration) * 100 : 0);
 
@@ -98,18 +106,18 @@
 	}
 
 	// map each runtime state to its COMPLETE tailwind class so the JIT
-// scanner can see the full literals (see https://tailwindcss.com/docs/content)
-const tbClass = { top: 'top-5', bottom: 'bottom-5' } as const;
-const lrClass = { left: 'left-2', right: 'right-2' } as const;
+	// scanner can see the full literals (see https://tailwindcss.com/docs/content)
+	const tbClass = { top: 'top-5', bottom: 'bottom-5' } as const;
+	const lrClass = { left: 'left-2', right: 'right-2' } as const;
 
-function next() {
+	function next() {
 		clearInterval(interval);
 		ad = getRandomAd();
 		earlyClicks = 0;
 		missedClicks = 0;
 		startTimestamp = -1;
-		const shitPointsMinus = (Math.atan(-0.4 * level + 4) + Math.PI/2) * 110;
-		console.log('Insanity-Meter minus:', shitPointsMinus)
+		const shitPointsMinus = (Math.atan(-0.4 * level + 4) + Math.PI / 2) * 110;
+		console.log('Insanity-Meter minus:', shitPointsMinus);
 		shitPoints -= shitPointsMinus;
 		if (shitPoints < 0) shitPoints = 0;
 
@@ -161,7 +169,7 @@ function next() {
 		reactionTime = Date.now() - startTimestamp;
 		gameState = 'scoreScreen';
 		score += totalScoreDelta;
-		console.log('Insanity-Meter add:', shitPointsDelta)
+		console.log('Insanity-Meter add:', shitPointsDelta);
 		shitPoints += shitPointsDelta;
 		level++;
 		if (shitPoints >= shitPointsLimit) {
@@ -189,7 +197,9 @@ function next() {
 <div class="absolute inset-x-[25%] top-4 h-10 rounded-full border border-white/20 p-1">
 	<div
 		class="h-full max-w-full min-w-7 rounded-full transition-[width,background-color] duration-700 ease-out"
-		style="width: {shitPercent}%; background-color: hsl({(120 - shitPercent * 1.2).toFixed(0)} 80% 45%)"
+		style="width: {shitPercent}%; background-color: hsl({(120 - shitPercent * 1.2).toFixed(
+			0
+		)} 80% 45%)"
 	>
 		<!-- {`${shitPoints.toFixed(0)}/${shitPointsLimit}`} -->
 	</div>
@@ -201,7 +211,7 @@ function next() {
 		>{score.toFixed(0)}</span
 	>
 </div>
-<div class="flex h-full flex-col items-center justify-center">
+<div class="flex h-full flex-col items-center justify-center p-2">
 	{#if gameState === 'startScreen'}
 		<div
 			class="flex max-w-lg flex-col items-center gap-2 rounded-lg border border-white/20 bg-[#212121] px-10 py-5 text-center text-sm text-neutral-300"
@@ -231,44 +241,54 @@ function next() {
 			>
 		</div>
 	{:else if gameState === 'adPlaying'}
-		<div class="relative">
-			<video
-				class="h-[720px] max-h-[70vh]"
-				onclick={() => {
-					missedClicks++;
-				}}
-				src={ad}
-				autoplay
-				onended={next}
-				onloadedmetadata={(e) => (videoDuration = e.currentTarget.duration)}
-				ontimeupdate={(e) => (videoCurrentTime = e.currentTarget.currentTime)}
-			/>
+		<div>
+			<div class="relative">
+				<video
+					class="h-[720px] max-h-[70vh] rounded-2xl"
+					onclick={() => {
+						missedClicks++;
+						openAdPage('missed');
+					}}
+					src={ad}
+					autoplay
+					onended={next}
+					onloadedmetadata={(e) => (videoDuration = e.currentTarget.duration)}
+					ontimeupdate={(e) => (videoCurrentTime = e.currentTarget.currentTime)}
+				/>
 
-			<!-- ad progress bar -->
-			<div class="absolute inset-x-0 bottom-0 h-1.5 bg-neutral-600">
-				<div
-					class="h-full bg-yellow-400"
-					style="width: {adProgress}%"
-				></div>
-			</div>
-
-			<!-- skip button -->
-			<button
-				onclick={skipEnabled
-					? stop
-					: () => {
-							earlyClicks++;
-						}}
-				class={`absolute p-2 ${tbClass[button_tb]} ${lrClass[button_lr]} ${button_anim === 'oscillate' ? 'transition-transform duration-1000 ease-linear' : ''}`}
-				style={`transform: translate(${button_offset_x}px, ${button_offset_y}px)`}
-			>
-				<div
-					class="flex w-[7em] items-center justify-around gap-2 rounded-full bg-black px-2 py-1 opacity-50 hover:opacity-90"
-				>
-					<span>Skip {countdown > 0 ? `${countdown}` : ''}</span>
-					<Skip />
+				<!-- ad progress bar -->
+				<div class="absolute inset-x-5 bottom-3 h-1.5 bg-neutral-600">
+					<div class="h-full bg-yellow-400" style="width: {adProgress}%"></div>
 				</div>
-			</button>
+
+				<!-- skip button -->
+				<button
+					onclick={skipEnabled
+						? stop
+						: () => {
+								earlyClicks++;
+							openAdPage('early');
+							}}
+					class={`absolute p-2 ${tbClass[button_tb]} ${lrClass[button_lr]} ${button_anim === 'oscillate' ? 'transition-transform duration-1000 ease-linear' : ''}`}
+					style={`transform: translate(${button_offset_x}px, ${button_offset_y}px)`}
+				>
+					<div
+						class="flex w-[7em] items-center justify-around gap-2 rounded-full bg-black px-2 py-1 opacity-50 hover:opacity-90"
+					>
+						<span>Skip {countdown > 0 ? `${countdown}` : ''}</span>
+						<Skip />
+					</div>
+				</button>
+			</div>
+			<h2 class="py-4 text-start text-xl">The top ten longest water slides!!!</h2>
+			<div class="flex gap-2">
+				<div class="h-10 w-10 rounded-full bg-blue-700 items-center"></div>
+				<div>
+					<div>Channel Name</div>
+					<div class="text-sm text-white/50">21M subscribers</div>
+				</div>
+				<div class="bg-white rounded-full px-3 flex items-center h-10 text-black ml-4">Subscribe</div>
+			</div>
 		</div>
 	{:else if gameState === 'scoreScreen'}
 		<div
