@@ -32,7 +32,7 @@
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
 
-<div class="flex h-screen w-screen flex-col bg-[#0f0f0f] py-4 text-white">
+<div class="flex min-h-screen w-screen flex-col bg-[#0f0f0f] py-4 text-white">
 	<div class="flex gap-4">
 		<button onclick={() => menuExtended = !menuExtended} class="mx-4 rounded-full p-2 hover:bg-white/20">
 			<HamburgerIcon />
