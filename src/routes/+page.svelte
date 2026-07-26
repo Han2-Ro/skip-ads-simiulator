@@ -94,7 +94,12 @@
 		};
 	}
 
-	function next() {
+	// map each runtime state to its COMPLETE tailwind class so the JIT
+// scanner can see the full literals (see https://tailwindcss.com/docs/content)
+const tbClass = { top: 'top-5', bottom: 'bottom-5' } as const;
+const lrClass = { left: 'left-2', right: 'right-2' } as const;
+
+function next() {
 		clearInterval(interval);
 		ad = getRandomAd();
 		earlyClicks = 0;
@@ -241,7 +246,7 @@
 					: () => {
 							earlyClicks++;
 						}}
-				class={`absolute p-2 ${button_tb}-5 ${button_lr}-2 ${button_anim === 'oscillate' ? 'transition-transform duration-1000 ease-linear' : ''}`}
+				class={`absolute p-2 ${tbClass[button_tb]} ${lrClass[button_lr]} ${button_anim === 'oscillate' ? 'transition-transform duration-1000 ease-linear' : ''}`}
 				style={`transform: translate(${button_offset_x}px, ${button_offset_y}px)`}
 			>
 				<div
