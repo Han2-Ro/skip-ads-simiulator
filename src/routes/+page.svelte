@@ -105,8 +105,8 @@ function next() {
 		earlyClicks = 0;
 		missedClicks = 0;
 		startTimestamp = -1;
-		const shitPointsMinus = (Math.atan(-0.15 * level + 4) + Math.PI/2) * 110;
-		console.log('ad-meter minus:', shitPointsMinus)
+		const shitPointsMinus = (Math.atan(-0.4 * level + 4) + Math.PI/2) * 110;
+		console.log('Insanity-Meter minus:', shitPointsMinus)
 		shitPoints -= shitPointsMinus;
 		if (shitPoints < 0) shitPoints = 0;
 
@@ -158,7 +158,7 @@ function next() {
 		reactionTime = Date.now() - startTimestamp;
 		gameState = 'scoreScreen';
 		score += totalScoreDelta;
-		console.log('ad-meter add:', shitPointsDelta)
+		console.log('Insanity-Meter add:', shitPointsDelta)
 		shitPoints += shitPointsDelta;
 		level++;
 		if (shitPoints >= shitPointsLimit) {
@@ -182,11 +182,11 @@ function next() {
 	}
 </script>
 
-<!-- Ad-Meter -->
+<!-- Insanity-Meter -->
 <div class="absolute inset-x-[25%] top-4 h-10 rounded-full border border-white/20 p-1">
 	<div
-		class="h-full max-w-full min-w-7 rounded-full bg-white/50 transition-[width] duration-700 ease-out"
-		style="width: {shitPercent}%"
+		class="h-full max-w-full min-w-7 rounded-full transition-[width,background-color] duration-700 ease-out"
+		style="width: {shitPercent}%; background-color: hsl({(120 - shitPercent * 1.2).toFixed(0)} 80% 45%)"
 	>
 		<!-- {`${shitPoints.toFixed(0)}/${shitPointsLimit}`} -->
 	</div>
@@ -207,11 +207,11 @@ function next() {
 				{#if score === 0}
 					Skip the ads!
 				{:else}
-					Too slow! The ad-meter is full.
+					Too slow! The ads made you insane.
 				{/if}
 			</h2>
-			<p>Can you hit the perfect skip? Keep the ad-meter low and the score high.</p>
-			<p>Tip: if you're fast enough the ad-meter can go down again.</p>
+			<p>Can you hit the perfect skip? Keep the Insanity-Meter low and the score high.</p>
+			<p>Tip: if you're fast enough the Insanity-Meter can go down again.</p>
 			{#if score > 0}
 				<p>Last Score: {score.toFixed()}</p>
 			{/if}
