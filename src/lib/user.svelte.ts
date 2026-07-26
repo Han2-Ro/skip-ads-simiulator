@@ -1,8 +1,67 @@
-import { deleteCookie, getCookie, hasCookie, setCookie } from './cookies';
+import { deleteCookie, getCookie, setCookie } from './cookies';
 
 // Cookie names
 export const USERNAME_COOKIE = 'adtube_username';
 export const GUEST_COOKIE = 'adtube_guest';
+
+// localStorage key prefix used *in addition to* cookies. On the real site we
+// rely on cookies; but inside sandboxed / cross-origin iframes (such as the
+// itch.io embed) `document.cookie` may be blocked while `localStorage` is still
+// available (per top-level-site partition). Mirroring the identity there lets
+// the player stay logged in across reloads in those contexts. Every access is
+// guarded so an opaque-origin sandbox never crashes hydration in any browser.
+const LS_PREFIX = 'adtube_';
+
+function lsGet(name: string): string | null {
+	if (typeof localStorage === 'undefined') return null;
+	try {
+		return localStorage.getItem(LS_PREFIX + name);
+	} catch {
+		return null;
+	}
+}
+
+function lsSet(name: string, value: string): void {
+	if (typeof localStorage === 'undefined') return;
+	try {
+		localStorage.setItem(LS_PREFIX + name, value);
+	} catch {
+		/* ignore sandboxed-iframe write failures */
+	}
+}
+
+function lsDel(name: string): void {
+	if (typeof localStorage === 'undefined') return;
+	try {
+		localStorage.removeItem(LS_PREFIX + name);
+	} catch {
+		/* ignore sandboxed-iframe delete failures */
+	}
+}
+
+/** Read identity state, preferring cookies and falling back to localStorage. */
+function readStored(name: string): string | null {
+	let value: string | null = null;
+	try {
+		value = getCookie(name);
+	} catch {
+		value = null;
+	}
+	if (value === null) value = lsGet(name);
+	return value;
+}
+
+/** Persist identity state to both cookies (for the real site) and localStorage. */
+function writeStored(name: string, value: string): void {
+	setCookie(name, value, 365);
+	lsSet(name, value);
+}
+
+/** Remove identity state from both backing stores. */
+function clearStored(name: string): void {
+	deleteCookie(name);
+	lsDel(name);
+}
 
 // A username can be at most this many characters (sanitized below).
 export const MAX_USERNAME_LENGTH = 20;
@@ -28,10 +87,17 @@ let guest = $state(false);
 
 // Initialize once at module load (browser only). SSR skips this since the
 // cookies (and `document`) aren't available, and prerendering shouldn't
-// depend on cookie state.
+// depend on cookie state. The whole block is guarded so a storage access
+// failure (e.g. document.cookie throwing in a sandboxed opaque-origin iframe)
+// can never crash module evaluation and break SvelteKit hydration.
 if (typeof document !== 'undefined') {
-	username = getCookie(USERNAME_COOKIE);
-	guest = hasCookie(GUEST_COOKIE);
+	try {
+		username = readStored(USERNAME_COOKIE);
+		guest = readStored(GUEST_COOKIE) !== null;
+	} catch {
+		username = null;
+		guest = false;
+	}
 }
 
 /** The currently logged-in username, or null if none is set. */
@@ -58,8 +124,8 @@ export function hasIdentity(): boolean {
 export function login(value: string, days = 365): void {
 	const clean = sanitizeUsername(value);
 	if (!clean) return;
-	setCookie(USERNAME_COOKIE, clean, days);
-	deleteCookie(GUEST_COOKIE);
+	writeStored(USERNAME_COOKIE, clean);
+	clearStored(GUEST_COOKIE);
 	username = clean;
 	guest = false;
 }
@@ -69,16 +135,16 @@ export function login(value: string, days = 365): void {
  * on every reload *and* remove any previously chosen username.
  */
 export function continueAsGuest(days = 365): void {
-	setCookie(GUEST_COOKIE, 'true', days);
-	deleteCookie(USERNAME_COOKIE);
+	writeStored(GUEST_COOKIE, 'true');
+	clearStored(USERNAME_COOKIE);
 	username = null;
 	guest = true;
 }
 
 /** Remove username and guest cookies entirely (sign out / reset identity). */
 export function logout(): void {
-	deleteCookie(USERNAME_COOKIE);
-	deleteCookie(GUEST_COOKIE);
+	clearStored(USERNAME_COOKIE);
+	clearStored(GUEST_COOKIE);
 	username = null;
 	guest = false;
 }
