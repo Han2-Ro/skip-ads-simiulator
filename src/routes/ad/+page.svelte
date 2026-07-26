@@ -1,11 +1,18 @@
 <script lang="ts">
 	import { ads } from '$lib/ads';
 	import { pickRandom } from '$lib/random';
-	import { page } from '$app/state';
+	import { browser } from '$app/environment';
 
 	// Why the player ended up here: `early` = clicked the skip button before
 	// it was ready, `missed` = clicked on the video and missed the button.
-	const from = $derived(page.url.searchParams.get('from'));
+	// Read client-side only — accessing url.searchParams during prerender
+	// throws, so we guard it with `browser` inside an $effect (no SSR run).
+	let from = $state<'early' | 'missed' | null>(null);
+	$effect(() => {
+		if (!browser) return;
+		const value = new URLSearchParams(window.location.search).get('from');
+		from = value === 'early' || value === 'missed' ? value : null;
+	});
 
 	// Pick a stable-but-random advertiser for this tab using Math.random at
 	// load time. Use one of the real ads so the "after the ad" video matches.
@@ -44,9 +51,11 @@
 	<meta name="robots" content="noindex" />
 </svelte:head>
 
-<div class="min-h-full bg-linear-to-b from-yellow-50 to-orange-100 text-neutral-900">
+<div class="min-h-screen bg-linear-to-b from-yellow-50 to-orange-100 text-neutral-900">
 	<!-- sponsor banner -->
-	<div class="bg-red-600 px-4 py-2 text-center text-sm font-bold uppercase tracking-wider text-white">
+	<div
+		class="bg-red-600 px-4 py-2 text-center text-sm font-bold tracking-wider text-white uppercase"
+	>
 		🔥 Limited-time offer — only {fmt(dealCountdown)} left! 🔥
 	</div>
 
@@ -66,22 +75,15 @@
 	<!-- hero -->
 	<section class="mx-auto grid max-w-5xl gap-8 px-6 pb-12 md:grid-cols-2">
 		<div class="overflow-hidden rounded-xl bg-neutral-900 shadow-2xl">
-			<video
-				class="h-[360px] w-full object-cover"
-				src={ad.src}
-				autoplay
-				loop
-				muted
-				playsinline
-			/>
+			<video class="h-[360px] w-full object-cover" src={ad.src} autoplay loop muted playsinline
+			></video>
 		</div>
 		<div class="flex flex-col justify-center">
-			<h1 class="text-3xl font-black leading-tight md:text-4xl">
+			<h1 class="text-3xl leading-tight font-black md:text-4xl">
 				Introducing the {ad.author ?? 'Amazing'} Experience
 			</h1>
 			<p class="mt-4 text-neutral-700">
-				Doctors hate it. Your friends already have three. It slices, it dices, it skips ads
-				for you — allegedly. You deserve the best, and the best is one click away.
+				Missed the button? Clicked to early? Well try again! Or take a break and watch this add.
 			</p>
 
 			<div class="mt-6 flex items-end gap-3">
@@ -106,7 +108,7 @@
 	<section class="mx-auto max-w-5xl px-6 pb-12">
 		<h2 class="mb-6 text-center text-2xl font-bold">What our customers say</h2>
 		<div class="grid gap-6 sm:grid-cols-3">
-			{#each ['“Changed my life!” — Karen', '“I cannot believe this is legal.” — Bob', '“My whole family bought one.” — A. Real Human'] as quote}
+			{#each ['“Changed my life!” — Karen', '“I cannot believe this is legal.” — Bob', '“My whole family bought one.” — A. Real Human'] as quote, i (i)}
 				<figure class="rounded-xl bg-white p-6 shadow-md">
 					<blockquote class="text-lg font-semibold text-neutral-800">{quote}</blockquote>
 					<div class="mt-3 text-yellow-500">★★★★★</div>
@@ -118,13 +120,23 @@
 	<!-- footer -->
 	<footer class="mx-auto max-w-5xl px-6 pb-12 text-center text-sm text-neutral-500">
 		<p class="mb-2">
-			You arrived here via a{from === 'early' ? 'n early' : ' missed'} click. {reasonText[
-				(from as 'early' | 'missed') ?? 'missed'
-			]}
+			You arrived here via a{from === 'early' ? 'n early' : ' missed'} click. {from
+				? reasonText[from]
+				: reasonText['missed']}
 		</p>
 		{#if ad.attributionHtml}
-			<p class="text-xs">{@html ad.attributionHtml}</p>
+			<p class="text-xs ad-attribution">{@html ad.attributionHtml}</p>
 		{/if}
 		<p class="mt-2">This is a parody mock page. No real product is being sold.</p>
 	</footer>
 </div>
+
+<style>
+	.ad-attribution :global(a) {
+		color: blue;
+	}
+
+	.ad-attribution :global(a:hover) {
+		text-decoration: underline;
+	}
+</style>

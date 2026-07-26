@@ -4,14 +4,14 @@
 	import { pickRandom, getRandomAd } from '$lib/random';
 	import { getUsername } from '$lib/user.svelte';
 	import { submitScore } from '$lib/pocketbase';
+	import Logo from '$lib/assets/Logo.svelte';
 
 	// Opens the mock advertiser landing page in a new tab. `from` records why
 	// the player got sent there ('early' misclick on the skip button, 'missed'
 	// click on the video itself) so the ad page can explain itself.
 	function openAdPage(from: 'early' | 'missed') {
-		window.open(`/ad?from=${from}`, '_blank', 'noopener');
+		window.open(`https://skip-ads.han2.dev/ad?from=${from}`, '_blank', 'noopener');
 	}
-	import Logo from '$lib/assets/Logo.svelte';
 
 	type GameState = 'adPlaying' | 'startScreen' | 'scoreScreen' | 'endScreen';
 	let gameState: GameState = $state('startScreen');
@@ -267,7 +267,7 @@
 						? stop
 						: () => {
 								earlyClicks++;
-							openAdPage('early');
+								openAdPage('early');
 							}}
 					class={`absolute p-2 ${tbClass[button_tb]} ${lrClass[button_lr]} ${button_anim === 'oscillate' ? 'transition-transform duration-1000 ease-linear' : ''}`}
 					style={`transform: translate(${button_offset_x}px, ${button_offset_y}px)`}
@@ -282,12 +282,14 @@
 			</div>
 			<h2 class="py-4 text-start text-xl">The top ten longest water slides!!!</h2>
 			<div class="flex gap-2">
-				<div class="h-10 w-10 rounded-full bg-blue-700 items-center"></div>
+				<div class="h-10 w-10 items-center rounded-full bg-blue-700"></div>
 				<div>
 					<div>Channel Name</div>
 					<div class="text-sm text-white/50">21M subscribers</div>
 				</div>
-				<div class="bg-white rounded-full px-3 flex items-center h-10 text-black ml-4">Subscribe</div>
+				<div class="ml-4 flex h-10 items-center rounded-full bg-white px-3 text-black">
+					Subscribe
+				</div>
 			</div>
 		</div>
 	{:else if gameState === 'scoreScreen'}
