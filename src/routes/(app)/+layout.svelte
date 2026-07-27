@@ -20,12 +20,24 @@
 	// Redirect to the login page unless the user already has an identity
 	// (logged in *or* chose to continue as guest). Runs client-side only,
 	// so prerendering at build time is unaffected.
+	//
+	// CRITICAL: /login itself lives in this same route group, so the layout
+	// (and this effect) re-mounts there. Without the route-id guard, a
+	// first-time visitor (no cookie, no guest flag — e.g. a brand-new browser,
+	// an incognito window, or the iframe-context on itch where cookies and
+	// partitioned localStorage are unavailable) would loop on
+	// `goto('/login') -> re-run -> goto('/login') -> …` forever. In Chrome that
+	// trips its IPC-flooding protection (crbug.com/1038223), which throttles
+	// navigation and freezes the page dead — exactly the "nothing is clickable"
+	// symptom. We guard with `page.route.id` (base-path-independent, unlike
+	// `page.url.pathname` which mismatches under itch's sub-path/relative
+	// deployment). The route id includes the group folder (e.g. `/(app)/login`),
+	// so we match by suffix to stay group-rename-resilient. The mock /ad page
+	// (outside this group) is exempt by design.
 	$effect(() => {
-		void page.url.pathname; // track navigation
 		if (!browser) return;
 		if (hasIdentity()) return;
-		// You can't get lost here without an identity — but the mock /ad page
-		// (outside this group) is intentionally exempt from this redirect.
+		if (page.route.id?.endsWith('/login')) return; // already here — stop the loop
 		goto(loginPath, { replaceState: true });
 	});
 </script>
